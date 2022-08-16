@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KSB LLC</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_authentification">AuthentificationActivity</string>
+    <string name="title_activity_access_lvlactivity">AccessLVLActivity</string>
+</resources>

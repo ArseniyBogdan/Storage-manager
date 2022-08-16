@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.ksbllc">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.KSBLLC">
+        <activity
+            android:name=".presentation.AccessLVLActivity"
+            android:exported="false"
+            android:label="@string/title_activity_access_lvlactivity"
+            android:theme="@style/Theme.KSBLLC" />
+        <activity
+            android:name=".presentation.AuthentificationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_authentification"
+            android:theme="@style/Theme.KSBLLC.NoActionBar" />
+        <activity
+            android:name=".presentation.RegistrationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_registration"
+            android:theme="@style/Theme.KSBLLC.NoActionBar" />
+        <activity
+            android:name=".presentation.SettingsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.KSBLLC.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".presentation.MainActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.KSBLLC.NoActionBar" />
+    </application>
+
+</manifest>
