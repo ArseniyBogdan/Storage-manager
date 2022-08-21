@@ -31,7 +31,7 @@ class AccessLVLActivityVM: ViewModel() {
 
     suspend fun resetAccessLVL(accesLVLUnit :AccessLVLUnit): Boolean{
         val result = resetAccessLVLUseCase.execute(accesLVLUnit)
-        flagReset.value = true
+        flagReset.value = result
         return result
     }
 

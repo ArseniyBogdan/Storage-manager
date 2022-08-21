@@ -16,4 +16,9 @@ interface FirebaseRepository {
     suspend fun deleteWarehouse(nameWarehouse: String): Boolean
     suspend fun getAllUsersAccessLVL(): ArrayList<AccessLVLUnit>
     suspend fun resetAccessLVL(accessLVLUnit: AccessLVLUnit): Boolean
+    suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean
+    suspend fun changeAmountOfProduct(nameOFWarehouse: String, nameOFProduct: String, changes: Float): Boolean
+    suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product>
+    suspend fun sendPhotoAboutChange(photo: Any): Boolean
+
 }

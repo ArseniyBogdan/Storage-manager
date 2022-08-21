@@ -1,6 +1,5 @@
 package com.example.ksbllc.data.storage.models
 
-class Product(name: String = "", amountOfProduct: Float = 0f) {
-    val name: String = name
-    val amountOfProduct: Float = amountOfProduct
-}
+data class Product(val name: String = "", val amountOfProduct_Netto: Float = 0f,
+              val amountOfProduct_Brutto: Float = 0f
+)

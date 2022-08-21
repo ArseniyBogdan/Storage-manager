@@ -1,5 +1,6 @@
 package com.example.ksbllc.data.storage.firebase
 
+import androidx.annotation.ArrayRes
 import com.example.ksbllc.data.storage.UserStorage
 import com.example.ksbllc.data.storage.models.*
 import com.google.firebase.auth.FirebaseAuth
@@ -195,4 +196,61 @@ class FirebaseUserStorage : UserStorage {
             }
         }
     }
+
+    override suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean {
+        TODO("Перепроверить путь до продуктов")
+        return suspendCoroutine { continuation ->
+            warehouses.child(nameOFWarehouse).child("products").child(product.name).setValue(product).addOnSuccessListener {
+                continuation.resume(true)
+            }.addOnCanceledListener {
+                continuation.resume(false)
+            }
+        }
+    }
+
+    override suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product> {
+        TODO("Перепроверить всё")
+
+        return suspendCoroutine { continuation ->
+            val products = ArrayList<Product>()
+
+
+            val postLIstener = object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(data in snapshot.children){
+                        val product = data.getValue(Product::class.java)
+
+                        if(product != null){
+                            products.add(product)
+                        }
+                    }
+                    continuation.resume(products)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(products)
+                }
+            }
+            warehouses.child(nameOFWarehouse).child("products").addListenerForSingleValueEvent(postLIstener)
+        }
+    }
+
+    override suspend fun changeAmountOfProduct(
+        nameOFWarehouse: String,
+        nameOFProduct: String,
+        changes: Float
+    ): Boolean {
+        return suspendCoroutine { continuation ->
+            warehouses.child(nameOFWarehouse).child(nameOFProduct).setValue(changes).addOnSuccessListener {
+                continuation.resume(true)
+            }.addOnFailureListener {
+                continuation.resume(false)
+            }
+        }
+    }
+
+    override suspend fun sendPhotoAboutChange(photo: Any): Boolean {
+        TODO("А вот тут мои полномочия сворачиваются")
+    }
+
 }

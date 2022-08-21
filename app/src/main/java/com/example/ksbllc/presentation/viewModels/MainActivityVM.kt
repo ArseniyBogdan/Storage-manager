@@ -60,7 +60,7 @@ class MainActivityVM : ViewModel() {
         val items: ArrayList<ProductItemModel> = ArrayList()
 
         for(product in warehouse.products!!){
-            items.add(ProductItemModel(product.name, product.amountOfProduct))
+            items.add(ProductItemModel(product.name, product.amountOfProduct_Netto, product.amountOfProduct_Brutto))
         }
         return items
     }

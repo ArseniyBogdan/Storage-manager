@@ -38,7 +38,8 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
             val products = ArrayList<Product>()
             for(product in warehouse.products!!){
                 products.add(Product(name = product.name,
-                    amountOfProduct = product.amountOfProduct))
+                    amountOfProduct_Netto = product.amountOfProduct_Netto,
+                    amountOfProduct_Brutto = product.amountOfProduct_Brutto))
             }
             warehouses.add(com.ksbllc.domain.models.Warehouse(warehouse.name, warehouse.capacity, products))
         }
@@ -53,7 +54,8 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
             listOfProducts.add(
                 com.example.ksbllc.data.storage.models.Product(
                     name = product.name,
-                    amountOfProduct = product.amountOfProduct
+                    amountOfProduct_Netto = product.amountOfProduct_Netto,
+                    amountOfProduct_Brutto = product.amountOfProduct_Brutto
                 )
             )
         }
@@ -70,8 +72,8 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
                 listOfProducts.add(
                     com.example.ksbllc.data.storage.models.Product(
                         name = product.name,
-                        amountOfProduct = product.amountOfProduct
-                    )
+                        amountOfProduct_Netto = product.amountOfProduct_Netto,
+                        amountOfProduct_Brutto = product.amountOfProduct_Brutto                    )
                 )
             }
         }
@@ -104,4 +106,39 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
         val result = userStorage.resetAccessLVL(accessLVLUnitData)
         return result
     }
+
+    override suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean {
+        val result = userStorage.addProduct(nameOFWarehouse,
+            com.example.ksbllc.data.storage.models.Product(product.name,
+                product.amountOfProduct_Netto, product.amountOfProduct_Brutto))
+        return result
+    }
+
+    override suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product> {
+        val pre_result: ArrayList<com.example.ksbllc.data.storage.models.Product> = userStorage.getAllProducts(nameOFWarehouse)
+        val result = ArrayList<Product>()
+
+        for(product in pre_result){
+            result.add(Product(product.name, product.amountOfProduct_Netto, product.amountOfProduct_Brutto))
+        }
+
+        return result
+    }
+
+    override suspend fun changeAmountOfProduct(
+        nameOFWarehouse: String,
+        nameOFProduct: String,
+        changes: Float
+    ): Boolean {
+        val result = userStorage.changeAmountOfProduct(nameOFWarehouse, nameOFWarehouse, changes)
+        return result
+    }
+
+    override suspend fun sendPhotoAboutChange(photo: Any): Boolean {
+        TODO("реализовать номральную передачу фото")
+        val result = userStorage.sendPhotoAboutChange(photo)
+        return result
+    }
+
+
 }

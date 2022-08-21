@@ -52,6 +52,16 @@ class AccessLVLActivity : ComponentActivity() {
                 aLVLUnit.value = vm.getAllWorkersAccessLVL()
             })
 
+            vm.flagReset.observe(this, Observer {
+                if(vm.flagReset.value == true){
+                    val scope = CoroutineScope(Job() + Dispatchers.Main)
+                    val job = scope.launch {
+                        aLVLUnit.value = vm.getAllWorkersAccessLVL()
+                    }
+                    vm.flagReset.value = false
+                }
+            })
+
             KSBLLCTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -80,7 +90,7 @@ class AccessLVLActivity : ComponentActivity() {
         val backColorID = remember{ mutableStateOf(R.color.card_color)}
         val accessLVLr = remember{ mutableStateOf(accessLVL)}
 
-        vm.flagDelete.observe
+//        vm.flagDelete.observe
 
         if(rDialog.value){
             CreateAccessDialog(name = name, surname = surname,
@@ -99,7 +109,13 @@ class AccessLVLActivity : ComponentActivity() {
                         else{
                             backColorID.value = R.color.card_color
                         }},
-                    onLongClick = {backColorID.value = R.color.selected_color}
+                    onLongClick = {
+                        if(backColorID.value != R.color.selected_color){
+                            backColorID.value = R.color.selected_color
+                        }
+                        else{
+                            backColorID.value =R.color.card_color
+                        }}
                 )){
                 Column() {
                     Row(modifier = Modifier.fillMaxWidth()) {
@@ -128,6 +144,7 @@ class AccessLVLActivity : ComponentActivity() {
         vm.flagReset.observe(this, Observer {
             if(vm.flagReset.value == true){
                 Toast.makeText(this, "Уровень доступа изменён", Toast.LENGTH_SHORT).show()
+                // нужно обновить самый первый список
                 accessLVL.value = accessLVLD.value
                 vm.flagReset.value = false
             }

@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val composableFunctions: ComposableFunctions = ComposableFunctions()
+    private lateinit var context: MainActivity
 
     private lateinit var vm: MainActivityVM
 
@@ -52,10 +53,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val warehouses = remember{ mutableStateOf(ArrayList<Warehouse>()) }
-            var accessLVL =  "all"
+            var accessLVL =  remember{ mutableStateOf("administrator") }
             LaunchedEffect(key1 = Unit, block = {
-                accessLVL =  vm.getAccessLVL()
-                warehouses.value = vm.getAllWarehouses(accessLVL)
+                accessLVL.value =  vm.getAccessLVL()
+                warehouses.value = vm.getAllWarehouses(accessLVL.value)
             })
 
             // update list of warehouses, when activity restarts
@@ -63,15 +64,14 @@ class MainActivity : ComponentActivity() {
                 if(vm.flagRestart.value == true){
                     val scope = CoroutineScope(Job() + Dispatchers.Main)
                     val job = scope.launch {
-                        accessLVL =  vm.getAccessLVL()
-                        warehouses.value = vm.getAllWarehouses(accessLVL)
+                        accessLVL.value =  vm.getAccessLVL()
+                        warehouses.value = vm.getAllWarehouses(accessLVL.value)
                     }
                     vm.flagRestart.value = false
                 }
-
             })
 
-            val context = this
+            context = this
 
             KSBLLCTheme {
                 Surface(color = MaterialTheme.colors.background) {
@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }
-                    if(accessLVL == "administrator"){
+                    if(accessLVL.value == "administrator"){
                         Box(
                             contentAlignment = Alignment.TopEnd,
                             modifier = Modifier
@@ -173,7 +173,10 @@ class MainActivity : ComponentActivity() {
         val CardColor = colorResource(id = R.color.card_color)
         Card(shape = RoundedCornerShape(5.dp), modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(10.dp).
+            clickable {
+                startActivity(Intent(context, StorageActivity::class.java))
+            },
             backgroundColor = CardColor,
             elevation = 4.dp
         ) {
@@ -235,7 +238,7 @@ class MainActivity : ComponentActivity() {
                     fontSize = 20.sp, modifier = Modifier.padding(start = 10.dp, bottom = 5.dp))
                 Column(){
                     for(item in items){
-                        Text(text = "${item.typeOfProduct}: ${item.AmountOfProduct} кг",
+                        Text(text = "${item.typeOfProduct}: ${item.amountOfProduct_Netto} кг",
                             fontSize = 20.sp,
                             modifier = Modifier.padding(bottom = 5.dp, start = 10.dp))
                     }

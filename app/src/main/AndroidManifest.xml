@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KSBLLC">
         <activity
+            android:name=".presentation.StorageActivity"
+            android:exported="false"
+            android:label="@string/title_activity_storage"
+            android:theme="@style/Theme.KSBLLC" />
+        <activity
             android:name=".presentation.AccessLVLActivity"
             android:exported="false"
             android:label="@string/title_activity_access_lvlactivity"

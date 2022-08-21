@@ -1,7 +1,6 @@
 package com.example.ksbllc.data.storage
 
 import com.example.ksbllc.data.storage.models.*
-import com.ksbllc.domain.models.AccessLVLUnit
 
 interface UserStorage {
     suspend fun registration(user: User): Boolean
@@ -13,5 +12,8 @@ interface UserStorage {
     suspend fun deleteWarehouse(nameWarehouse: String): Boolean
     suspend fun getAllUsersAccessLVL(): ArrayList<AccessLVLUnitData>
     suspend fun resetAccessLVL(accessLVLUnitData: AccessLVLUnitData): Boolean
-
+    suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean
+    suspend fun changeAmountOfProduct(nameOFWarehouse: String, nameOFProduct: String, changes: Float): Boolean
+    suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product>
+    suspend fun sendPhotoAboutChange(photo: Any): Boolean
 }
