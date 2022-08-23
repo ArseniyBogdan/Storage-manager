@@ -3,10 +3,10 @@ package com.ksbllc.domain.usecase
 import com.ksbllc.domain.models.Warehouse
 import com.ksbllc.domain.repository.FirebaseRepository
 
-class GetAllWarehousesUseCase(private val firebaseRepository: FirebaseRepository) {
+class GetAllWarehousesUseCase(private val firebaseRep: FirebaseRepository) {
 
     suspend fun execute(accessLVL: String): ArrayList<Warehouse>{
-        val result = firebaseRepository.getAllWarehouses(accessLVL)
+        val result = firebaseRep.getAllWarehouses(accessLVL)
         return result
     }
 

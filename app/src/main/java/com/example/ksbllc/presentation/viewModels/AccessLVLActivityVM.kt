@@ -9,19 +9,10 @@ import com.ksbllc.domain.models.User
 import com.ksbllc.domain.usecase.GetAllUsersAccessLVLUseCase
 import com.ksbllc.domain.usecase.ResetAccessLVLUseCase
 
-class AccessLVLActivityVM: ViewModel() {
-    private val fireBaseRep by lazy(LazyThreadSafetyMode.NONE) {
-        FirebaseRepositoryImp(FirebaseUserStorage())
-    }
-
-    private val getAllUsersAccessLVLUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        GetAllUsersAccessLVLUseCase(fireBaseRep)
-    }
-
-    private val resetAccessLVLUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        ResetAccessLVLUseCase(fireBaseRep)
-    }
-
+class AccessLVLActivityVM(
+    private val getAllUsersAccessLVLUseCase: GetAllUsersAccessLVLUseCase,
+    private val resetAccessLVLUseCase: ResetAccessLVLUseCase
+): ViewModel() {
     val flagReset = MutableLiveData(false)
 
     suspend fun getAllWorkersAccessLVL(): ArrayList<AccessLVLUnit>{

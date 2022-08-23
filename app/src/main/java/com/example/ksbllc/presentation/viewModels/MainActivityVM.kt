@@ -9,32 +9,13 @@ import com.ksbllc.domain.models.Product
 import com.ksbllc.domain.models.Warehouse
 import com.ksbllc.domain.usecase.*
 
-class MainActivityVM : ViewModel() {
-
-    private val fireBaseRep by lazy(LazyThreadSafetyMode.NONE) {
-        FirebaseRepositoryImp(FirebaseUserStorage())
-    }
-
-    private val getAccessLVLUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        GetAccessLVLUseCase(fireBaseRep)
-    }
-
-    private val getAllWarehousesUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        GetAllWarehousesUseCase(fireBaseRep)
-    }
-
-    private val createNewWarehouseUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        CreateNewWarehouseUseCase(fireBaseRep)
-    }
-
-    private val renameWarehouseUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        RenameWarehouseUseCase(fireBaseRep)
-    }
-
-    private val deleteWarehouseUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        DeleteWarehouseUseCase(fireBaseRep)
-    }
-
+class MainActivityVM(
+    private val getAccessLVLUseCase: GetAccessLVLUseCase,
+    private val getAllWarehousesUseCase: GetAllWarehousesUseCase,
+    private val createNewWarehouseUseCase: CreateNewWarehouseUseCase,
+    private val renameWarehouseUseCase: RenameWarehouseUseCase,
+    private val deleteWarehouseUseCase: DeleteWarehouseUseCase,
+) : ViewModel() {
     val flagAdd = MutableLiveData(false)
     val flagDelete = MutableLiveData(false)
     val flagRename = MutableLiveData(false)

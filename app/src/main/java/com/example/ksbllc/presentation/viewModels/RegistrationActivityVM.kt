@@ -7,18 +7,12 @@ import com.example.ksbllc.data.repository.FirebaseRepositoryImp
 import com.example.ksbllc.data.storage.firebase.FirebaseUserStorage
 import com.ksbllc.domain.usecase.RegistrationUseCase
 
-class RegistrationActivityVM : ViewModel(){
+class RegistrationActivityVM(
+    private val registrationUseCase: RegistrationUseCase
+) : ViewModel(){
 
     val flagReg = MutableLiveData(false)
     val flagError = MutableLiveData("")
-
-    private val fireBaseRep by lazy(LazyThreadSafetyMode.NONE) {
-        FirebaseRepositoryImp(FirebaseUserStorage())
-    }
-
-    private val registrationUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        RegistrationUseCase(fireBaseRep)
-    }
 
     suspend fun registration(firstName:String, secondName: String, email: String, password: String,
                              passwordConfirm: String){

@@ -1,41 +1,27 @@
 package com.example.ksbllc.presentation.viewModels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ksbllc.data.repository.FirebaseRepositoryImp
 import com.example.ksbllc.data.storage.firebase.FirebaseUserStorage
 import com.example.ksbllc.data.storage.models.Product
 import com.example.ksbllc.presentation.models.ProductItemModel
 import com.ksbllc.domain.usecase.AddProductUseCase
-import com.ksbllc.domain.usecase.ChangeAmountofProductUseCase
+import com.ksbllc.domain.usecase.changeAmountOfProductUseCase
 import com.ksbllc.domain.usecase.GetAllProductsUseCase
 import com.ksbllc.domain.usecase.SendPhotoAboutChangeUseCase
 
-class StorageActivityVM: ViewModel() {
-
-    private val fireBaseRep by lazy(LazyThreadSafetyMode.NONE) {
-        FirebaseRepositoryImp(FirebaseUserStorage())
-    }
-
-    private val addProductUseCase by lazy(LazyThreadSafetyMode.NONE){
-        AddProductUseCase(fireBaseRep)
-    }
-
-    private val getAllProductsUseCase by lazy(LazyThreadSafetyMode.NONE){
-        GetAllProductsUseCase(fireBaseRep)
-    }
-
-    private val changeAmountOfProductUseCase by lazy(LazyThreadSafetyMode.NONE){
-        ChangeAmountofProductUseCase(fireBaseRep)
-    }
-
-    private val sendPhotoAboutChangeUseCase by lazy(LazyThreadSafetyMode.NONE){
-        SendPhotoAboutChangeUseCase(fireBaseRep)
-    }
+class StorageActivityVM(
+    private val addProductUseCase: AddProductUseCase,
+    private val getAllProductsUseCase: GetAllProductsUseCase,
+    private val changeAmountOfProductUseCase: changeAmountOfProductUseCase,
+    private val sendPhotoAboutChangeUseCase: SendPhotoAboutChangeUseCase
+): ViewModel() {
+    val flagAdd = MutableLiveData(false)
 
     suspend fun getAllProducts(nameOfWarehouse: String): ArrayList<ProductItemModel>{
         val pre_result = getAllProductsUseCase.execute(nameOfWarehouse = nameOfWarehouse)
         val result = ArrayList<ProductItemModel>()
-
 
         for(product in pre_result){
             result.add(
@@ -57,7 +43,6 @@ class StorageActivityVM: ViewModel() {
 
     suspend fun changeAmountOfProduct(nameOfWarehouse: String, TypeOfProduct: String, changedValue: Float): Boolean{
         val result = changeAmountOfProductUseCase.execute(nameOfWarehouse, TypeOfProduct, changedValue)
-
         return result
     }
 

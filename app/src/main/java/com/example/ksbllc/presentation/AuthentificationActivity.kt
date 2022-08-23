@@ -24,19 +24,19 @@ import androidx.lifecycle.ViewModelProvider
 
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.viewModels.AuthentificationActivityVM
+import com.example.ksbllc.presentation.viewModels.MainActivityVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AuthentificationActivity : ComponentActivity() {
     private val composableFunctions: ComposableFunctions = ComposableFunctions()
 
-    private lateinit var vm: AuthentificationActivityVM
+    private val vm by viewModel<AuthentificationActivityVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        vm = ViewModelProvider(this).get(AuthentificationActivityVM::class.java)
-
         vm.flagSI.observe(this, Observer {
             if(vm.flagSI.value == true) {
                 startActivity(Intent(this, MainActivity::class.java))

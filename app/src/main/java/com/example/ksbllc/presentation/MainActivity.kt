@@ -35,12 +35,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     private val composableFunctions: ComposableFunctions = ComposableFunctions()
     private lateinit var context: MainActivity
 
-    private lateinit var vm: MainActivityVM
+    private val vm by viewModel<MainActivityVM>()
 
     override fun onRestart() {
         super.onRestart()
@@ -48,7 +49,6 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        vm = ViewModelProvider(this).get(MainActivityVM::class.java)
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -175,7 +175,9 @@ class MainActivity : ComponentActivity() {
             .fillMaxWidth()
             .padding(10.dp).
             clickable {
-                startActivity(Intent(context, StorageActivity::class.java))
+                startActivity(Intent(context, StorageActivity::class.java).apply {
+                    putExtra("WarehouseName", warehouse.name)
+                })
             },
             backgroundColor = CardColor,
             elevation = 4.dp

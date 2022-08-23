@@ -23,24 +23,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.ksbllc.R
+import com.example.ksbllc.presentation.viewModels.MainActivityVM
 import com.example.ksbllc.presentation.viewModels.RegistrationActivityVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegistrationActivity : ComponentActivity() {
     private val composableFunctions: ComposableFunctions = ComposableFunctions()
 
-    private lateinit var vm: RegistrationActivityVM
+    private val vm by viewModel<RegistrationActivityVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this
 
         val prefs = getSharedPreferences("pref", MODE_PRIVATE)
-
-        vm = ViewModelProvider(this).get(RegistrationActivityVM::class.java)
 
         vm.flagReg.observe(this, Observer {
             if(vm.flagReg.value == true){

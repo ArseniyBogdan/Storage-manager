@@ -6,17 +6,12 @@ import androidx.lifecycle.ViewModel
 import com.example.ksbllc.data.repository.FirebaseRepositoryImp
 import com.example.ksbllc.data.storage.firebase.FirebaseUserStorage
 import com.ksbllc.domain.usecase.AuthentificationUseCase
+import com.ksbllc.domain.usecase.GetAllUsersAccessLVLUseCase
+import com.ksbllc.domain.usecase.ResetAccessLVLUseCase
 
-class AuthentificationActivityVM: ViewModel() {
-
-    private val fireBaseRep by lazy(LazyThreadSafetyMode.NONE) {
-        FirebaseRepositoryImp(FirebaseUserStorage())
-    }
-
-    private val authentificationUseCase by lazy (LazyThreadSafetyMode.NONE) {
-        AuthentificationUseCase(fireBaseRep)
-    }
-
+class AuthentificationActivityVM(
+    private val authentificationUseCase: AuthentificationUseCase
+): ViewModel() {
     val flagSI = MutableLiveData(false)
     val flagError = MutableLiveData("")
 

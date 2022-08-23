@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.ui.theme.KSBLLCTheme
 import com.example.ksbllc.presentation.viewModels.AccessLVLActivityVM
+import com.example.ksbllc.presentation.viewModels.AuthentificationActivityVM
 import com.example.ksbllc.presentation.viewModels.MainActivityVM
 import com.ksbllc.domain.models.AccessLVLUnit
 import com.ksbllc.domain.models.Warehouse
@@ -36,14 +37,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AccessLVLActivity : ComponentActivity() {
     private val composableFun = ComposableFunctions()
-    private lateinit var vm: AccessLVLActivityVM
+    private val vm by viewModel<AccessLVLActivityVM>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        vm = ViewModelProvider(this).get(AccessLVLActivityVM::class.java)
         super.onCreate(savedInstanceState)
 
         setContent {
