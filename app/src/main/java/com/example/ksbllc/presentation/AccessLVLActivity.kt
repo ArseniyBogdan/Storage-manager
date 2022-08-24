@@ -2,6 +2,7 @@ package com.example.ksbllc.presentation
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -58,6 +59,7 @@ class AccessLVLActivity : ComponentActivity() {
                     val scope = CoroutineScope(Job() + Dispatchers.Main)
                     val job = scope.launch {
                         aLVLUnit.value = vm.getAllWorkersAccessLVL()
+                        Log.e("log", aLVLUnit.value.get(0).accessLVL)
                     }
                     vm.flagReset.value = false
                 }
@@ -90,6 +92,11 @@ class AccessLVLActivity : ComponentActivity() {
         val rDialog = remember {mutableStateOf(false)}
         val backColorID = remember{ mutableStateOf(R.color.card_color)}
         val accessLVLr = remember{ mutableStateOf(accessLVL)}
+
+        // при каждом изменении уровня доступа, надо обновлять
+        if(accessLVLr.value != accessLVL){
+            accessLVLr.value = accessLVL
+        }
 
 //        vm.flagDelete.observe
 
@@ -124,7 +131,7 @@ class AccessLVLActivity : ComponentActivity() {
                             modifier = Modifier.padding(top = 10.dp, start = 10.dp),
                             fontSize = 22.sp)
                     }
-                    Text(text = "Уровень доступа: " + accessLVLr.value,
+                    Text(text = "Уровень доступа: " + accessLVL,
                         modifier = Modifier.padding(top = 10.dp, start = 10.dp, bottom = 10.dp),
                         fontSize = 22.sp)
                 }

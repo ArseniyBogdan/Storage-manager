@@ -237,11 +237,11 @@ class FirebaseUserStorage : UserStorage {
 
     override suspend fun changeAmountOfProduct(
         nameOFWarehouse: String,
-        nameOFProduct: String,
-        changes: Float
+        product: Product
     ): Boolean {
         return suspendCoroutine { continuation ->
-            warehouses.child(nameOFWarehouse).child(nameOFProduct).setValue(changes).addOnSuccessListener {
+            // обновить продукт
+            warehouses.child(nameOFWarehouse).child(product.name).setValue(product).addOnSuccessListener {
                 continuation.resume(true)
             }.addOnFailureListener {
                 continuation.resume(false)

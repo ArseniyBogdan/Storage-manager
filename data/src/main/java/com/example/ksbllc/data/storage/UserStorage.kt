@@ -13,7 +13,7 @@ interface UserStorage {
     suspend fun getAllUsersAccessLVL(): ArrayList<AccessLVLUnitData>
     suspend fun resetAccessLVL(accessLVLUnitData: AccessLVLUnitData): Boolean
     suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean
-    suspend fun changeAmountOfProduct(nameOFWarehouse: String, nameOFProduct: String, changes: Float): Boolean
+    suspend fun changeAmountOfProduct(nameOFWarehouse: String, product: Product): Boolean
     suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product>
     suspend fun sendPhotoAboutChange(photo: Any): Boolean
 }

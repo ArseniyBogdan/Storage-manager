@@ -127,10 +127,11 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
 
     override suspend fun changeAmountOfProduct(
         nameOFWarehouse: String,
-        nameOFProduct: String,
-        changes: Float
+        product: Product,
     ): Boolean {
-        val result = userStorage.changeAmountOfProduct(nameOFWarehouse, nameOFWarehouse, changes)
+        val productForData = com.example.ksbllc.data.storage.models.Product(product.name,
+            product.amountOfProduct_Netto, product.amountOfProduct_Brutto)
+        val result = userStorage.changeAmountOfProduct(nameOFWarehouse, productForData)
         return result
     }
 

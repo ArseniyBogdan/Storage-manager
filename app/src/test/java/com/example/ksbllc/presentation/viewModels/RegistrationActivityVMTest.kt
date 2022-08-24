@@ -1,5 +1,6 @@
 //package com.example.ksbllc.presentation.viewModels
 //
+//import androidx.core.text.isDigitsOnly
 //import com.google.android.gms.common.internal.Asserts
 //import com.ksbllc.domain.repository.FirebaseRepository
 //import com.ksbllc.domain.usecase.AuthentificationUseCase
@@ -17,7 +18,7 @@
 //import kotlin.coroutines.EmptyCoroutineContext
 //
 //class RegistrationActivityVMTest {
-//
+
 //    private val rep = mock<FirebaseRepository>()
 //    private val registrationUseCase = mock<RegistrationUseCase>()
 //    private val registrationActivityVM = RegistrationActivityVM()
@@ -68,6 +69,12 @@
 //    @Test
 //    fun `should return false if the all data is entered correctly`(){
 //
+//    }
+//
+//    @Test
+//    fun `kemk`(){
+//        val result = "12.5".isDigitsOnly()
+//        Assertions.assertEquals(result, true)
 //    }
 //
 //

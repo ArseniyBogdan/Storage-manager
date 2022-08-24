@@ -20,7 +20,7 @@ class GetAccessLVLUseCaseTest {
         val scope =
             createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + EmptyCoroutineContext)
         val job = scope.launch {
-            Mockito.`when`(rep.getAccessLVLUseCase()).thenReturn("all")
+            Mockito.`when`(rep.getAccessLVL()).thenReturn("all")
 
             val useCase = GetAccessLVLUseCase(rep)
             val actual = useCase.execute()

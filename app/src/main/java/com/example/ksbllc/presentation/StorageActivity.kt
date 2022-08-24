@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,8 +93,17 @@ class StorageActivity : ComponentActivity() {
 
     @Composable
     fun ProductItem(product: ProductItemModel){
+        val rDialog = remember { mutableStateOf(value = false)}
+
+        if(rDialog.value){
+            CreateResetAmountOfProductDialog(openDialog = rDialog, product)
+        }
+
         Card(elevation = 3.dp, shape = RoundedCornerShape(5.dp),
-            contentColor = colorResource(id = R.color.card_color)) {
+            contentColor = colorResource(id = R.color.card_color),
+            modifier = Modifier.clickable {
+                rDialog.value = true
+            }) {
             // надо будет добавить по иконке Edit
             Column() {
                 Row(modifier = Modifier
@@ -141,7 +151,7 @@ class StorageActivity : ComponentActivity() {
             onDismissRequest = {
                 openDialog.value = false
             },
-            title = { Text(text = "Вы хотите добавить склад?")},
+            title = { Text(text = "Вы хотите добавить продукт?")},
             text = {
                 TextField(value = message.value,
                     onValueChange = {newText -> message.value = newText})
@@ -168,7 +178,96 @@ class StorageActivity : ComponentActivity() {
             })
     }
 
-    // диалог по добавлению массы в продукты
+
+    @Composable
+    fun CreateResetAmountOfProductDialog(openDialog: MutableState<Boolean>, product: ProductItemModel){
+        // TODO("сделать проверку на netto<=brutto")
+
+        val nettoChange = remember { mutableStateOf("")}
+        val bruttoChange = remember { mutableStateOf("")}
+
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+            },
+            title = null,
+            text = {
+                Column {
+                    Text(
+                        text = product.typeOfProduct,
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(start = 5.dp, top = 5.dp, end = 5.dp),
+                        color = Color.Black
+                    )
+                    Divider(
+                        color = Color.Black,
+                        thickness = 2.dp,
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp)
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()){
+                        TextField(value = nettoChange.value,
+                            onValueChange = { newText -> nettoChange.value = newText },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(4f)
+                                .padding(5.dp),
+                            textStyle = TextStyle(fontSize = 22.sp)
+                        )
+                        Text(text = "кг" , fontSize = 22.sp, modifier = Modifier.padding(5.dp))
+                    }
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        TextField(value = bruttoChange.value,
+                            onValueChange = { newText -> bruttoChange.value = newText },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(5.dp),
+                            textStyle = TextStyle(fontSize = 22.sp)
+                        )
+                        Text(text = "кг" ,
+                            fontSize = 22.sp,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                    }
+                }
+
+            },
+            buttons = {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center){
+                    Button(onClick = {
+                        if (vm.checkCorrectness(nettoChange.value, bruttoChange.value)){
+                            val scope = CoroutineScope(Job() + Dispatchers.Main)
+                            val job = scope.launch {
+                                vm.withdrowAmountOfProduct(nameOfWarehouse = warehouseName,
+                                    product, nettoChange.value.toFloat(), bruttoChange.value.toFloat())
+                                openDialog.value = false
+                            }
+                        }
+                    })
+                    {
+                        Text(text = "Изъять")
+                    }
+                    Button(onClick = {
+                        if (vm.checkCorrectness(nettoChange.value, bruttoChange.value)){
+                            val scope = CoroutineScope(Job() + Dispatchers.Main)
+                            val job = scope.launch {
+                                vm.addAmountOfProduct(nameOfWarehouse = warehouseName,
+                                    product, nettoChange.value.toFloat(), bruttoChange.value.toFloat())
+                                openDialog.value = false
+                            }
+                        }
+                    })
+                    {
+                        Text(text = "Добавить")
+                    }
+                }
+            })
+
+    }
+
     // диалог по удалению
 
     @Preview(showBackground = true)
