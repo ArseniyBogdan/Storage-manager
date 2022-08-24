@@ -97,9 +97,9 @@ class FirebaseUserStorage : UserStorage {
         }
     }
 
-    override suspend fun createNewWarehouse(storageName: String, capacity: Float,
+    override suspend fun createNewWarehouse(storageName: String,
                                     products: ArrayList<Product>?): Boolean{
-        val warehouse = Warehouse(storageName, capacity, products)
+        val warehouse = Warehouse(storageName, products)
 
         return suspendCoroutine { continuation ->
             warehouses.child(storageName).setValue(warehouse).addOnSuccessListener {
@@ -118,7 +118,7 @@ class FirebaseUserStorage : UserStorage {
             return false
         }
 
-        val resultR = createNewWarehouse(newName, capacity = capacity, products = products)
+        val resultR = createNewWarehouse(newName, products = products)
         return resultR
     }
 
@@ -198,7 +198,6 @@ class FirebaseUserStorage : UserStorage {
     }
 
     override suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean {
-        TODO("Перепроверить путь до продуктов")
         return suspendCoroutine { continuation ->
             warehouses.child(nameOFWarehouse).child("products").child(product.name).setValue(product).addOnSuccessListener {
                 continuation.resume(true)
@@ -209,8 +208,6 @@ class FirebaseUserStorage : UserStorage {
     }
 
     override suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product> {
-        TODO("Перепроверить всё")
-
         return suspendCoroutine { continuation ->
             val products = ArrayList<Product>()
 
@@ -244,6 +241,18 @@ class FirebaseUserStorage : UserStorage {
             warehouses.child(nameOFWarehouse).child(product.name).setValue(product).addOnSuccessListener {
                 continuation.resume(true)
             }.addOnFailureListener {
+                continuation.resume(false)
+            }
+        }
+    }
+
+    override suspend fun deleteUser(accessLVLUnitData: AccessLVLUnitData): Boolean {
+        val userID = getUserIDByAccessLVLUnitData(name = accessLVLUnitData.name,
+            surname = accessLVLUnitData.surname)
+        return suspendCoroutine { continuation ->
+            users.child(userID).removeValue().addOnSuccessListener {
+                continuation.resume(true)
+            }.addOnFailureListener{
                 continuation.resume(false)
             }
         }

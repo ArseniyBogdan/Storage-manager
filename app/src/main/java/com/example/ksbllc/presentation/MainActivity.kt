@@ -25,15 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.models.ProductItemModel
 import com.ksbllc.domain.models.Warehouse
 import com.example.ksbllc.presentation.viewModels.MainActivityVM
 import com.example.ksbllc.ui.theme.KSBLLCTheme
-import com.ksbllc.domain.models.Product
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -57,13 +54,13 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(key1 = Unit, block = {
                 accessLVL.value =  vm.getAccessLVL()
                 warehouses.value = vm.getAllWarehouses(accessLVL.value)
+
             })
 
             // update list of warehouses, when activity restarts
             vm.flagRestart.observe(this, Observer {
                 if(vm.flagRestart.value == true){
-                    val scope = CoroutineScope(Job() + Dispatchers.Main)
-                    val job = scope.launch {
+                    lifecycleScope.launch {
                         accessLVL.value =  vm.getAccessLVL()
                         warehouses.value = vm.getAllWarehouses(accessLVL.value)
                     }
@@ -133,7 +130,7 @@ class MainActivity : ComponentActivity() {
         vm.flagAdd.observe(this, Observer {
             if(vm.flagAdd.value == true){
                 Toast.makeText(this, "Элемент добавлен в базу", Toast.LENGTH_SHORT).show()
-                warehouses.value.add(Warehouse(message.value, 10000f))
+                warehouses.value.add(Warehouse(message.value, 0f))
             }
         })
 
@@ -155,8 +152,7 @@ class MainActivity : ComponentActivity() {
                         Text(text = "Отменить")
                     }
                     Button(onClick = {
-                        val scope = CoroutineScope(Job() + Dispatchers.Main)
-                        val job = scope.launch {
+                        lifecycleScope.launch {
                             vm.createNewWarehouse(storageName = message.value, products = arrayListOf())
                             openDialog.value = false
                         }
@@ -279,8 +275,7 @@ class MainActivity : ComponentActivity() {
                         Text(text = "Отменить")
                     }
                     Button(onClick = {
-                        val scope = CoroutineScope(Job() + Dispatchers.Main)
-                        val job = scope.launch {
+                        lifecycleScope.launch {
                             vm.renameWarehouse(warehouse.name, message.value, warehouse.capacity, warehouse.products)
                             rDialog.value = false
                         }
@@ -316,8 +311,7 @@ class MainActivity : ComponentActivity() {
                         Text(text = "Отменить")
                     }
                     Button(onClick = {
-                        val scope = CoroutineScope(Job() + Dispatchers.Main)
-                        val job = scope.launch {
+                        lifecycleScope.launch {
                             vm.deleteWarehouse(nameOFStorage)
                             dDialog.value = false
                         }

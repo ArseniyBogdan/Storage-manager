@@ -31,17 +31,19 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
 
     override suspend fun getAllWarehouses(accessValue: String): ArrayList<com.ksbllc.domain.models.Warehouse> {
         val result = userStorage.getAllWarehouses(accessValue = accessValue)
-
-        var warehouses = ArrayList<com.ksbllc.domain.models.Warehouse>()
+        var capacity: Float = 0f
+        val warehouses = ArrayList<com.ksbllc.domain.models.Warehouse>()
 
         for(warehouse in result){
             val products = ArrayList<Product>()
             for(product in warehouse.products!!){
+                capacity += product.amountOfProduct_Netto
                 products.add(Product(name = product.name,
                     amountOfProduct_Netto = product.amountOfProduct_Netto,
                     amountOfProduct_Brutto = product.amountOfProduct_Brutto))
             }
-            warehouses.add(com.ksbllc.domain.models.Warehouse(warehouse.name, warehouse.capacity, products))
+            warehouses.add(com.ksbllc.domain.models.Warehouse(warehouse.name, capacity, products))
+            capacity = 0f
         }
 
         return warehouses
@@ -60,7 +62,7 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
             )
         }
 
-        val result = userStorage.createNewWarehouse(warehouse.name, warehouse.capacity, listOfProducts)
+        val result = userStorage.createNewWarehouse(warehouse.name, listOfProducts)
         return result
     }
 
@@ -135,8 +137,17 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
         return result
     }
 
+    override suspend fun deleteUser(accessLVLUnit: AccessLVLUnit): Boolean {
+
+        val accessLVLUnitData = AccessLVLUnitData(accessLVLUnit.name,
+            accessLVLUnit.surname, accessLVLUnit.accessLVL)
+
+        val result = userStorage.deleteUser(accessLVLUnitData)
+        return result
+    }
+
     override suspend fun sendPhotoAboutChange(photo: Any): Boolean {
-        TODO("реализовать номральную передачу фото")
+        TODO("реализовать нормальную передачу фото")
         val result = userStorage.sendPhotoAboutChange(photo)
         return result
     }

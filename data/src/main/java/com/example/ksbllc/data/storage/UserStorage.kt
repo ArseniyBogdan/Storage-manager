@@ -7,7 +7,7 @@ interface UserStorage {
     suspend fun signIn(authentificationParams: AuthentificationParams): Boolean
     suspend fun getAccessLVL(): String
     suspend fun getAllWarehouses(accessValue: String): ArrayList<Warehouse>
-    suspend fun createNewWarehouse(storageName: String, capacity: Float, products: ArrayList<Product>?): Boolean
+    suspend fun createNewWarehouse(storageName: String, products: ArrayList<Product>?): Boolean
     suspend fun renameWarehouse(obsoleteName: String, newName: String, capacity: Float, products: ArrayList<Product>?): Boolean
     suspend fun deleteWarehouse(nameWarehouse: String): Boolean
     suspend fun getAllUsersAccessLVL(): ArrayList<AccessLVLUnitData>
@@ -16,4 +16,6 @@ interface UserStorage {
     suspend fun changeAmountOfProduct(nameOFWarehouse: String, product: Product): Boolean
     suspend fun getAllProducts(nameOFWarehouse: String): ArrayList<Product>
     suspend fun sendPhotoAboutChange(photo: Any): Boolean
+    suspend fun deleteUser(accessLVLUnitData: AccessLVLUnitData): Boolean
+
 }

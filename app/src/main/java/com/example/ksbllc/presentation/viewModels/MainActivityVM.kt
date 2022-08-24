@@ -33,7 +33,7 @@ class MainActivityVM(
     }
 
     suspend fun getAllWarehouses(accessLVL: String): ArrayList<Warehouse>{
-        val result = getAllWarehousesUseCase.execute(accessLVL = getAccessLVL())
+        val result = getAllWarehousesUseCase.execute(accessLVL = accessLVL)
         return result
     }
 

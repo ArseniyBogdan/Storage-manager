@@ -26,7 +26,8 @@ val appModule = module {
     viewModel<AccessLVLActivityVM>(){
         AccessLVLActivityVM(
             getAllUsersAccessLVLUseCase = get(),
-            resetAccessLVLUseCase = get()
+            resetAccessLVLUseCase = get(),
+            deleteUserUseCase = get()
         )
     }
 

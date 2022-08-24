@@ -20,14 +20,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.viewModels.AuthentificationActivityVM
-import com.example.ksbllc.presentation.viewModels.MainActivityVM
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -89,8 +85,7 @@ class AuthentificationActivity : ComponentActivity() {
                     .fillMaxWidth(0.75f))
 
             Button(onClick = {
-                val scope = CoroutineScope(Job() + Dispatchers.Main)
-                val job = scope.launch {
+                lifecycleScope.launch {
                     vm.signIn(email.value, password.value)
                 }
             },

@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,17 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.models.ProductItemModel
 import com.example.ksbllc.presentation.ui.theme.KSBLLCTheme
-import com.example.ksbllc.presentation.viewModels.MainActivityVM
-import com.example.ksbllc.presentation.viewModels.RegistrationActivityVM
 import com.example.ksbllc.presentation.viewModels.StorageActivityVM
-import com.ksbllc.domain.models.Warehouse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -60,15 +53,16 @@ class StorageActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    cf.Top()
-                    LazyColumn {
-                        itemsIndexed(
-                            products.value
-                        ){ index, product ->
-                            ProductItem(product)
+                    Column() {
+                        cf.Top()
+                        LazyColumn {
+                            itemsIndexed(
+                                products.value
+                            ){ index, product ->
+                                ProductItem(product)
+                            }
                         }
                     }
-
                     val sDialog = remember{mutableStateOf(value = false)}
 
                     if (sDialog.value){
@@ -165,8 +159,7 @@ class StorageActivity : ComponentActivity() {
                         Text(text = "Отменить")
                     }
                     Button(onClick = {
-                        val scope = CoroutineScope(Job() + Dispatchers.Main)
-                        val job = scope.launch {
+                        lifecycleScope.launch {
                             val product = ProductItemModel(message.value, 0f, 0f)
                             vm.addProduct(nameOfWarehouse = warehouseName, product = product)
                             openDialog.value = false
@@ -239,8 +232,7 @@ class StorageActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.Center){
                     Button(onClick = {
                         if (vm.checkCorrectness(nettoChange.value, bruttoChange.value)){
-                            val scope = CoroutineScope(Job() + Dispatchers.Main)
-                            val job = scope.launch {
+                            lifecycleScope.launch {
                                 vm.withdrowAmountOfProduct(nameOfWarehouse = warehouseName,
                                     product, nettoChange.value.toFloat(), bruttoChange.value.toFloat())
                                 openDialog.value = false
@@ -252,8 +244,7 @@ class StorageActivity : ComponentActivity() {
                     }
                     Button(onClick = {
                         if (vm.checkCorrectness(nettoChange.value, bruttoChange.value)){
-                            val scope = CoroutineScope(Job() + Dispatchers.Main)
-                            val job = scope.launch {
+                            lifecycleScope.launch {
                                 vm.addAmountOfProduct(nameOfWarehouse = warehouseName,
                                     product, nettoChange.value.toFloat(), bruttoChange.value.toFloat())
                                 openDialog.value = false

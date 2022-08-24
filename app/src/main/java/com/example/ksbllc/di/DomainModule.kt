@@ -57,4 +57,8 @@ val domainModule = module {
         SendPhotoAboutChangeUseCase(firebaseRep = get())
     }
 
+    factory<DeleteUserUseCase>{
+        DeleteUserUseCase(firebaseRep = get())
+    }
+
 }
