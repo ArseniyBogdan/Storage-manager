@@ -46,8 +46,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AccessLVLActivity : ComponentActivity() {
     private val composableFun = ComposableFunctions()
     private val vm by viewModel<AccessLVLActivityVM>()
-    private val selectedUsers = ArrayList<AccessLVLUnit>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +64,7 @@ class AccessLVLActivity : ComponentActivity() {
                     lifecycleScope.launch {
                         aLVLUnit.value = vm.getAllWorkersAccessLVL()
                     }
+                    counter.value = 0
                     vm.flagDelete.value = false
                 }
             })
@@ -105,7 +104,7 @@ class AccessLVLActivity : ComponentActivity() {
             val dDialog = remember { mutableStateOf(false) }
 
             if(dDialog.value){
-                DeleteUsersDialog(dDialog = dDialog, selectedUsers)
+                DeleteUsersDialog(dDialog = dDialog)
             }
 
             if(counter.value > 0){
@@ -119,7 +118,6 @@ class AccessLVLActivity : ComponentActivity() {
                         modifier = Modifier
                             .size(40.dp)
                             .clickable {
-                                // надо как-то получить полный список выделенных user
                                 dDialog.value = true
                             })
                 }
@@ -135,11 +133,13 @@ class AccessLVLActivity : ComponentActivity() {
         val backColorID = remember{ mutableStateOf(R.color.card_color)}
         val accessLVLr = remember{ mutableStateOf(accessLVL)}
 
-        // по количеству выделенных User показываю/убираю кнопку удаления
-
         // при каждом изменении уровня доступа, надо обновлять список
         if(accessLVLr.value != accessLVL){
             accessLVLr.value = accessLVL
+        }
+
+        if(counter.value == 0){
+            backColorID.value = R.color.card_color
         }
 
         if(rDialog.value){
@@ -147,9 +147,7 @@ class AccessLVLActivity : ComponentActivity() {
                 accessLVL = accessLVLr, rDialog = rDialog)
         }
 
-        //TODO
         val context = this
-
         Column(modifier = Modifier.background(color = colorResource(id = backColorID.value))) {
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -163,14 +161,15 @@ class AccessLVLActivity : ComponentActivity() {
                         } else if (backColorID.value != R.color.selected_color) {
                             backColorID.value = R.color.selected_color
                             counter.value += 1
-                            Toast
-                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                            vm.selectUser(name, surname, accessLVL)
+                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
                                 .show()
+
                         } else {
                             backColorID.value = R.color.card_color
                             counter.value -= 1
-                            Toast
-                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                            vm.unselectUser(name, surname, accessLVL)
+                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
                                 .show()
                         }
                     },
@@ -178,15 +177,13 @@ class AccessLVLActivity : ComponentActivity() {
                         if (backColorID.value != R.color.selected_color) {
                             backColorID.value = R.color.selected_color
                             counter.value += 1
-                            Toast
-                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
-                                .show()
+                            vm.selectUser(name, surname, accessLVL)
+                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT).show()
                         } else {
                             backColorID.value = R.color.card_color
                             counter.value -= 1
-                            Toast
-                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
-                                .show()
+                            vm.unselectUser(name, surname, accessLVL)
+                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT).show()
                         }
                     }
                 )){
@@ -283,7 +280,7 @@ class AccessLVLActivity : ComponentActivity() {
     }
 
     @Composable
-    fun DeleteUsersDialog(dDialog: MutableState<Boolean>, users: ArrayList<AccessLVLUnit>){
+    fun DeleteUsersDialog(dDialog: MutableState<Boolean>){
         AlertDialog(
             onDismissRequest = {
                 dDialog.value = false
@@ -298,26 +295,15 @@ class AccessLVLActivity : ComponentActivity() {
                         androidx.compose.material.Text(text = "Отменить")
                     }
                     Button(onClick = {
-                        // TODO///////////////////////////////////////
                         lifecycleScope.launch {
-                            vm.deleteUsers(users)
+                            vm.deleteUsers()
                             dDialog.value = false
                         }
-                        // TODO///////////////////////////////////////
                     }) {
                         androidx.compose.material.Text(text = "Подтвердить")
                     }
                 }
             })
     }
-
-    @Preview(showBackground = true)
-    @Composable
-    fun DefaultPreview() {
-        KSBLLCTheme {
-            ALVLItem("kemk", "The Second", "administrator", mutableStateOf(1))
-        }
-    }
-
 }
 

@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +63,21 @@ class RegistrationActivity : ComponentActivity() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     composableFunctions.Top()
                     RegistrationBody(context)
+
+
+                }
+                Box(
+                        contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)){
+                Icon(
+                    Icons.Rounded.AccountBox, contentDescription = "Добавить",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            startActivity(Intent(context, AuthentificationActivity::class.java))
+                        })
                 }
             }
         }
@@ -139,5 +157,10 @@ class RegistrationActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        finish()
     }
 }

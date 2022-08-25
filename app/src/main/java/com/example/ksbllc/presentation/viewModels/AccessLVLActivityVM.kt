@@ -22,6 +22,7 @@ class AccessLVLActivityVM(
     val flagReset = MutableLiveData(false)
     val flagDelete = MutableLiveData(false)
     val flagVisible = MutableLiveData(false)
+    private val selectedUsers = ArrayList<AccessLVLUnit>()
 
     suspend fun getAllWorkersAccessLVL(): ArrayList<AccessLVLUnit>{
         val result = getAllUsersAccessLVLUseCase.execute()
@@ -34,19 +35,33 @@ class AccessLVLActivityVM(
         return result
     }
 
-    suspend fun deleteUsers(accessLVLUnits: ArrayList<AccessLVLUnit>): Boolean{
+    suspend fun deleteUsers(): Boolean{
         val results = ArrayList<Boolean>()
         viewModelScope.launch(Dispatchers.IO){
-            for(accessLVLUnit in accessLVLUnits){
+            for(accessLVLUnit in selectedUsers){
                 results.add(deleteUserUseCase.execute(accessLVLUnit))
             }
-        }
+        }.join()
         for(result in results){
             if(!result){
-               return false
+                flagDelete.value = false
+                return false
             }
         }
+
         flagDelete.value = true
         return true
+    }
+
+    fun selectUser(name: String, surname: String, accessLVL: String){
+        selectedUsers.add(AccessLVLUnit(name, surname, accessLVL))
+    }
+
+    fun unselectUser(name: String, surname: String, accessLVL: String){
+        for(user in selectedUsers){
+            if(user.name == name && user.surname == surname && user.accessLVL == accessLVL){
+                selectedUsers.remove(user)
+            }
+        }
     }
 }
