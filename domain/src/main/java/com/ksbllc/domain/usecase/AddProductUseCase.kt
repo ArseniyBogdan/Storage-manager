@@ -5,8 +5,8 @@ import com.ksbllc.domain.repository.FirebaseRepository
 
 class AddProductUseCase(private val firebaseRep: FirebaseRepository) {
 
-    suspend fun execute(nameOfWarehouse: String, product: Product) : Boolean{
-        val result: Boolean = firebaseRep.addProduct(nameOfWarehouse, product)
+    suspend fun execute(nameOfWarehouse: String, products: ArrayList<Product>) : Boolean{
+        val result: Boolean = firebaseRep.addProduct(nameOfWarehouse, products)
         return result
     }
 

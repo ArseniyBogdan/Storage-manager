@@ -14,7 +14,7 @@ class MainActivityVM(
     private val getAllWarehousesUseCase: GetAllWarehousesUseCase,
     private val createNewWarehouseUseCase: CreateNewWarehouseUseCase,
     private val renameWarehouseUseCase: RenameWarehouseUseCase,
-    private val deleteWarehouseUseCase: DeleteWarehouseUseCase,
+    private val deleteWarehouseUseCase: DeleteWarehouseUseCase
 ) : ViewModel() {
     val flagAdd = MutableLiveData(false)
     val flagDelete = MutableLiveData(false)

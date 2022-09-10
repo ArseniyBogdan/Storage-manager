@@ -13,8 +13,8 @@ val domainModule = module {
         AuthentificationUseCase(firebaseRep = get())
     }
 
-    factory<changeAmountOfProductUseCase>{
-        changeAmountOfProductUseCase(firebaseRep = get())
+    factory<ChangeAmountOfProductUseCase>{
+        ChangeAmountOfProductUseCase(firebaseRep = get())
     }
 
     factory<CreateNewWarehouseUseCase>{
@@ -60,5 +60,29 @@ val domainModule = module {
     factory<DeleteUserUseCase>{
         DeleteUserUseCase(firebaseRep = get())
     }
+
+    factory<GetAllWarehousesTitlesUseCase>{
+        GetAllWarehousesTitlesUseCase(firebaseRep = get())
+    }
+
+    factory<GetAllDataChangesUseCase>{
+        GetAllDataChangesUseCase(firebaseRep = get())
+    }
+
+    factory<GetUserNameUseCase>{
+        GetUserNameUseCase(firebaseRep = get())
+    }
+
+    factory<GetUserSurnameUseCase>{
+        GetUserSurnameUseCase(firebaseRep = get())
+    }
+
+    factory<SendAllDataChangesUseCase>{
+        SendAllDataChangesUseCase(firebaseRep = get())
+    }
+
+//    factory<GetPhotoByPathUseCase>{
+//        GetPhotoByPathUseCase(firebaseRep = get())
+//    }
 
 }

@@ -7,9 +7,8 @@ import com.example.ksbllc.data.repository.FirebaseRepositoryImp
 import com.example.ksbllc.data.storage.firebase.FirebaseUserStorage
 import com.ksbllc.domain.models.AccessLVLUnit
 import com.ksbllc.domain.models.User
-import com.ksbllc.domain.usecase.DeleteUserUseCase
-import com.ksbllc.domain.usecase.GetAllUsersAccessLVLUseCase
-import com.ksbllc.domain.usecase.ResetAccessLVLUseCase
+import com.ksbllc.domain.models.Warehouse
+import com.ksbllc.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -17,12 +16,21 @@ import kotlinx.coroutines.launch
 class AccessLVLActivityVM(
     private val getAllUsersAccessLVLUseCase: GetAllUsersAccessLVLUseCase,
     private val resetAccessLVLUseCase: ResetAccessLVLUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
+    private val getAllWarehousesTitlesUseCase: GetAllWarehousesTitlesUseCase,
 ): ViewModel() {
     val flagReset = MutableLiveData(false)
     val flagDelete = MutableLiveData(false)
     val flagVisible = MutableLiveData(false)
     private val selectedUsers = ArrayList<AccessLVLUnit>()
+    var warehouses: MutableLiveData<List<String>> = MutableLiveData<List<String>>()
+
+    fun fetchAllWarehouses(){
+        viewModelScope.launch {
+            val result = getAllWarehousesTitlesUseCase.execute()
+            warehouses.postValue(result.toList())
+        }
+    }
 
     suspend fun getAllWorkersAccessLVL(): ArrayList<AccessLVLUnit>{
         val result = getAllUsersAccessLVLUseCase.execute()

@@ -5,6 +5,7 @@ import com.example.ksbllc.data.storage.UserStorage
 import com.example.ksbllc.data.storage.models.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -13,7 +14,9 @@ class FirebaseUserStorage : UserStorage {
     private val db: FirebaseDatabase = FirebaseDatabase.getInstance("https://ksb-llc-default-rtdb.europe-west1.firebasedatabase.app/")
     private val users: DatabaseReference = db.getReference("Users")
     private val warehouses: DatabaseReference = db.getReference("Warehouses")
-
+    private val wDataList: DatabaseReference = db.getReference("W_Data")
+    private val fs: FirebaseStorage = FirebaseStorage.getInstance()
+    
     override suspend fun registration(user: User): Boolean{
         return suspendCoroutine { continuation ->
             auth.createUserWithEmailAndPassword(user.email, user.password)
@@ -158,7 +161,7 @@ class FirebaseUserStorage : UserStorage {
         }
     }
 
-    suspend fun getUserIDByAccessLVLUnitData(name: String, surname:String): String{
+    suspend fun getUserIDByNameAndSurname(name: String, surname:String): String{
         return suspendCoroutine { continuation ->
             val postListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -186,7 +189,7 @@ class FirebaseUserStorage : UserStorage {
     }
 
     override suspend fun resetAccessLVL(accessLVLUnitData: AccessLVLUnitData): Boolean {
-        val userID = getUserIDByAccessLVLUnitData(name = accessLVLUnitData.name,
+        val userID = getUserIDByNameAndSurname(name = accessLVLUnitData.name,
             surname = accessLVLUnitData.surname)
         return suspendCoroutine { continuation ->
             users.child(userID).child("accessLVL").setValue(accessLVLUnitData.accessLVL).addOnSuccessListener {
@@ -197,9 +200,9 @@ class FirebaseUserStorage : UserStorage {
         }
     }
 
-    override suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean {
+    override suspend fun addProduct(nameOFWarehouse: String, products: ArrayList<Product>): Boolean {
         return suspendCoroutine { continuation ->
-            warehouses.child(nameOFWarehouse).child("products").child(product.name).setValue(product).addOnSuccessListener {
+            warehouses.child(nameOFWarehouse).child("products").setValue(products).addOnSuccessListener {
                 continuation.resume(true)
             }.addOnCanceledListener {
                 continuation.resume(false)
@@ -247,7 +250,7 @@ class FirebaseUserStorage : UserStorage {
     }
 
     override suspend fun deleteUser(accessLVLUnitData: AccessLVLUnitData): Boolean {
-        val userID = getUserIDByAccessLVLUnitData(name = accessLVLUnitData.name,
+        val userID = getUserIDByNameAndSurname(name = accessLVLUnitData.name,
             surname = accessLVLUnitData.surname)
         return suspendCoroutine { continuation ->
             users.child(userID).removeValue().addOnSuccessListener {
@@ -258,8 +261,126 @@ class FirebaseUserStorage : UserStorage {
         }
     }
 
-    override suspend fun sendPhotoAboutChange(photo: Any): Boolean {
-        TODO("А вот тут мои полномочия сворачиваются")
+    override suspend fun sendPhotoAboutChange(photo: ByteArray): String {
+        //TODO("сделать проверку на отсутствие результата")
+        return suspendCoroutine { continuation ->
+            val fs_reference = fs.getReference("ImageDB")
+            val DBUploadImage = fs_reference.child(System.currentTimeMillis().toString() + "_image")
+            DBUploadImage.putBytes(photo).addOnSuccessListener{
+                continuation.resume(fs_reference.downloadUrl.result.toString())
+            }.addOnCanceledListener {
+                continuation.resume("None")
+            }
+        }
+    }
+
+    override suspend fun getAllWarehousesTitles(): ArrayList<String> {
+        return suspendCoroutine { continuation ->
+            val titlesOfWarehouses = ArrayList<String>()
+
+            val postListener = object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(data in snapshot.children){
+                        val warehouse = data.getValue(Warehouse::class.java)
+                        if(warehouse != null){
+                            titlesOfWarehouses.add(warehouse.name)
+                        }
+                    }
+                    continuation.resume(titlesOfWarehouses)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(titlesOfWarehouses)
+                }
+            }
+
+            warehouses.addListenerForSingleValueEvent(postListener)
+        }
+    }
+
+    override suspend fun getAllDataChanges(warehouseName: String): ArrayList<Data> {
+        return suspendCoroutine { continuation ->
+            val dataList = ArrayList<Data>()
+
+            val postListener = object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(dataEntry in snapshot.children){
+                        val data = dataEntry.getValue(Data::class.java)
+                        if(data != null){
+                            dataList.add(data)
+                        }
+                    }
+                    continuation.resume(dataList)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(dataList)
+                }
+            }
+
+            wDataList.child(warehouseName).addListenerForSingleValueEvent(postListener)
+        }
+    }
+
+    override suspend fun getUserName(): String {
+        return suspendCoroutine { continuation -> 
+            val id = auth.currentUser?.uid
+
+            val postListener = object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(data in snapshot.children){
+                        val user = data.getValue(User::class.java)
+                        val key: String? = data.key
+                        if(user != null){
+                            if(key == id){
+                                continuation.resume(user.name)
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume("Неизвестно")
+                }
+            }
+
+            users.addListenerForSingleValueEvent(postListener)
+        }
+    }
+
+    override suspend fun getUserSurname(): String {
+        return suspendCoroutine { continuation ->
+            val id = auth.currentUser?.uid
+
+            val postListener = object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(data in snapshot.children){
+                        val user = data.getValue(User::class.java)
+                        val key: String? = data.key
+                        if(user != null){
+                            if(key == id){
+                                continuation.resume(user.surname)
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume("Неизвестно")
+                }
+            }
+
+            users.addListenerForSingleValueEvent(postListener)
+        }
+    }
+
+    override suspend fun sendAllDataChanges(data: Data): Boolean {
+        return suspendCoroutine { continuation ->
+            wDataList.child(data.nameOfWarehouse).child(data.date).setValue(data).addOnSuccessListener {
+                continuation.resume(true)
+            }.addOnFailureListener {
+                continuation.resume(false)
+            }
+        }
     }
 
 }

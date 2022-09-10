@@ -13,7 +13,7 @@ val appModule = module {
             getAllWarehousesUseCase = get(),
             createNewWarehouseUseCase = get(),
             renameWarehouseUseCase = get(),
-            deleteWarehouseUseCase = get()
+            deleteWarehouseUseCase = get(),
         )
     }
 
@@ -27,7 +27,8 @@ val appModule = module {
         AccessLVLActivityVM(
             getAllUsersAccessLVLUseCase = get(),
             resetAccessLVLUseCase = get(),
-            deleteUserUseCase = get()
+            deleteUserUseCase = get(),
+            getAllWarehousesTitlesUseCase = get()
         )
     }
 
@@ -41,8 +42,18 @@ val appModule = module {
         StorageActivityVM(
             addProductUseCase = get(),
             getAllProductsUseCase = get(),
-            changeAmountOfProductUseCase = get(),
-            sendPhotoAboutChangeUseCase = get()
+            ChangeAmountOfProductUseCase = get(),
+            sendPhotoAboutChangeUseCase = get(),
+            getUserNameUseCase = get(),
+            getUserSurnameUseCase = get(),
+            sendAllDataChangesUseCase = get()
         )
     }
+
+//    viewModel<DataListActivityVM>(){
+//        DataListActivityVM(
+//            getAllDataChangesUseCase = get(),
+//            getPhotoByPathUseCase = get()
+//        )
+//    }
 }

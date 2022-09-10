@@ -1,9 +1,6 @@
 package com.example.ksbllc.presentation
 
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,23 +18,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations.map
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.ksbllc.R
 import com.example.ksbllc.presentation.ui.theme.KSBLLCTheme
 import com.example.ksbllc.presentation.viewModels.AccessLVLActivityVM
-import com.example.ksbllc.presentation.viewModels.AuthentificationActivityVM
-import com.example.ksbllc.presentation.viewModels.MainActivityVM
 import com.ksbllc.domain.models.AccessLVLUnit
 import com.ksbllc.domain.models.Warehouse
 import kotlinx.coroutines.*
@@ -46,6 +42,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AccessLVLActivity : ComponentActivity() {
     private val composableFun = ComposableFunctions()
     private val vm by viewModel<AccessLVLActivityVM>()
+    private var strSelectedData: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +51,8 @@ class AccessLVLActivity : ComponentActivity() {
             val aLVLUnit = remember{ mutableStateOf(ArrayList<AccessLVLUnit>()) }
             val visibleTrashCan = remember{ mutableStateOf(false)}
             val counter = remember{ mutableStateOf(0)}
+            vm.fetchAllWarehouses()
+            val warehouseNames by vm.warehouses.observeAsState(initial = emptyList())
             LaunchedEffect(key1 = Unit, block = {
                 aLVLUnit.value = vm.getAllWorkersAccessLVL()
             })
@@ -89,7 +88,7 @@ class AccessLVLActivity : ComponentActivity() {
                         LazyColumn{
                             itemsIndexed(aLVLUnit.value) { index, item ->
                                 ALVLItem(name = item.name, surname = item.surname,
-                                    accessLVL = item.accessLVL, counter)
+                                    accessLVL = item.accessLVL, counter, warehouseNames)
                             }
 
                         }
@@ -128,7 +127,7 @@ class AccessLVLActivity : ComponentActivity() {
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun ALVLItem(name: String, surname: String, accessLVL: String, counter: MutableState<Int>){
+    fun ALVLItem(name: String, surname: String, accessLVL: String, counter: MutableState<Int>, warehouseNames: List<String>){
         val rDialog = remember {mutableStateOf(false)}
         val backColorID = remember{ mutableStateOf(R.color.card_color)}
         val accessLVLr = remember{ mutableStateOf(accessLVL)}
@@ -144,7 +143,7 @@ class AccessLVLActivity : ComponentActivity() {
 
         if(rDialog.value){
             CreateAccessDialog(name = name, surname = surname,
-                accessLVL = accessLVLr, rDialog = rDialog)
+                accessLVL = accessLVLr, rDialog = rDialog, warehouseNames)
         }
 
         val context = this
@@ -162,14 +161,16 @@ class AccessLVLActivity : ComponentActivity() {
                             backColorID.value = R.color.selected_color
                             counter.value += 1
                             vm.selectUser(name, surname, accessLVL)
-                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                            Toast
+                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
                                 .show()
 
                         } else {
                             backColorID.value = R.color.card_color
                             counter.value -= 1
                             vm.unselectUser(name, surname, accessLVL)
-                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                            Toast
+                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
                                 .show()
                         }
                     },
@@ -178,12 +179,16 @@ class AccessLVLActivity : ComponentActivity() {
                             backColorID.value = R.color.selected_color
                             counter.value += 1
                             vm.selectUser(name, surname, accessLVL)
-                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                                .show()
                         } else {
                             backColorID.value = R.color.card_color
                             counter.value -= 1
                             vm.unselectUser(name, surname, accessLVL)
-                            Toast.makeText(context, counter.value.toString(), Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, counter.value.toString(), Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 )){
@@ -205,7 +210,8 @@ class AccessLVLActivity : ComponentActivity() {
 
     @Composable
     fun CreateAccessDialog(name: String, surname: String,
-                           accessLVL: MutableState<String>, rDialog: MutableState<Boolean>){
+                           accessLVL: MutableState<String>, rDialog: MutableState<Boolean>,
+                           warehouseNames: List<String>){
 
         val firstName = remember { mutableStateOf(name)}
         val secondName = remember { mutableStateOf(surname)}
@@ -250,10 +256,11 @@ class AccessLVLActivity : ComponentActivity() {
                                 .padding(top = 5.dp)
                                 .fillMaxWidth()
                                 .padding(top = 10.dp))
+
 //                        TODO("Сделать AutoCompleteEditText" +
 //                                " сделать единый UseCase для замены всех данных")
-                        
                     }
+                    TextFieldWithDropdownUsage(dataIn = warehouseNames)
                 }
 
             },
@@ -305,5 +312,84 @@ class AccessLVLActivity : ComponentActivity() {
                 }
             })
     }
+
+    @Composable
+    fun TextFieldWithDropdownUsage(dataIn: List<String>){
+        val dropDownOptions = remember { mutableStateOf(listOf<String>())}
+        val textFieldValue = remember { mutableStateOf(TextFieldValue())}
+        val dropDownExpanded = remember { mutableStateOf(false)}
+
+        fun onDropdownDismissRequest(){
+            dropDownExpanded.value = false
+        }
+
+        fun onValueChanged(value: TextFieldValue){
+            strSelectedData = value.text
+            dropDownExpanded.value = true
+            textFieldValue.value = value
+            dropDownOptions.value = dataIn.filter {
+                it.startsWith(value.text) && it != value.text
+            }
+        }
+
+        TextFieldWithDropdown(
+            modifier = Modifier.fillMaxWidth(),
+            value = textFieldValue.value,
+            setValue = ::onValueChanged,
+            onDismissRequest = ::onDropdownDismissRequest,
+            dropDownExpanded = dropDownExpanded.value,
+            list = dropDownOptions.value,
+            label = "Уровень доступа"
+        )
+    }
+
+    @Composable
+    fun TextFieldWithDropdown(
+        modifier: Modifier = Modifier,
+        value: TextFieldValue,
+        setValue: (TextFieldValue) -> Unit,
+        onDismissRequest: () -> Unit,
+        dropDownExpanded: Boolean,
+        list: List<String>,
+        label: String = ""
+    ){
+        Box(modifier){
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused)
+                            onDismissRequest()
+                    },
+                value = value,
+                onValueChange = setValue,
+                label = { Text(text = label)},
+                colors = TextFieldDefaults.outlinedTextFieldColors()
+            )
+            DropdownMenu(
+                expanded = dropDownExpanded,
+                properties = PopupProperties(
+                    focusable = false,
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true
+                ),
+                onDismissRequest = onDismissRequest
+            ) {
+                list.forEach{ text ->
+                    DropdownMenuItem(onClick = {
+                        setValue(
+                            TextFieldValue(
+                                text,
+                                TextRange(text.length)
+                            )
+                        )
+                    }) {
+                        Text(text = text)
+                    }
+                }
+            }
+        }
+    }
+
 }
 

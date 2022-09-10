@@ -5,4 +5,5 @@
     <string name="title_activity_authentification">AuthentificationActivity</string>
     <string name="title_activity_access_lvlactivity">AccessLVLActivity</string>
     <string name="title_activity_storage">StorageActivity</string>
+    <string name="title_activity_data_list">DataListActivity</string>
 </resources>

@@ -102,4 +102,7 @@ dependencies {
     implementation project(path: ':domain')
     implementation project(path: ':data')
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    // для observeAsState
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 }

@@ -50,11 +50,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val warehouses = remember{ mutableStateOf(ArrayList<Warehouse>()) }
-            var accessLVL =  remember{ mutableStateOf("administrator") }
+            val accessLVL =  remember{ mutableStateOf("administrator") }
             LaunchedEffect(key1 = Unit, block = {
                 accessLVL.value =  vm.getAccessLVL()
                 warehouses.value = vm.getAllWarehouses(accessLVL.value)
-
             })
 
             // update list of warehouses, when activity restarts

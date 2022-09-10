@@ -5,9 +5,12 @@ import com.example.ksbllc.data.storage.models.User
 import com.example.ksbllc.data.storage.models.AuthentificationParams
 import com.example.ksbllc.data.storage.UserStorage
 import com.example.ksbllc.data.storage.models.AccessLVLUnitData
+import com.example.ksbllc.data.storage.models.Data
 import com.ksbllc.domain.models.AccessLVLUnit
+import com.ksbllc.domain.models.DataChanges
 import com.ksbllc.domain.models.Product
 import com.ksbllc.domain.repository.FirebaseRepository
+import kotlin.coroutines.suspendCoroutine
 
 class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepository {
 
@@ -109,10 +112,15 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
         return result
     }
 
-    override suspend fun addProduct(nameOFWarehouse: String, product: Product): Boolean {
-        val result = userStorage.addProduct(nameOFWarehouse,
-            com.example.ksbllc.data.storage.models.Product(product.name,
+    override suspend fun addProduct(nameOFWarehouse: String, products: ArrayList<Product>): Boolean {
+        val productsForSend = ArrayList<com.example.ksbllc.data.storage.models.Product>()
+
+        for(product in products){
+            productsForSend.add(com.example.ksbllc.data.storage.models.Product(product.name,
                 product.amountOfProduct_Netto, product.amountOfProduct_Brutto))
+        }
+
+        val result = userStorage.addProduct(nameOFWarehouse, productsForSend)
         return result
     }
 
@@ -146,11 +154,59 @@ class FirebaseRepositoryImp(private val userStorage: UserStorage) : FirebaseRepo
         return result
     }
 
-    override suspend fun sendPhotoAboutChange(photo: Any): Boolean {
-        TODO("реализовать нормальную передачу фото")
+    override suspend fun sendPhotoAboutChange(photo: ByteArray): String {
         val result = userStorage.sendPhotoAboutChange(photo)
         return result
     }
 
+    override suspend fun getAllWarehousesTitles(): ArrayList<String> {
+        val result = userStorage.getAllWarehousesTitles()
+        return result
+    }
+
+    override suspend fun getAllDataChanges(warehouseName: String): ArrayList<DataChanges> {
+        val pre_result = userStorage.getAllDataChanges(warehouseName)
+        val result = ArrayList<DataChanges>()
+        for(data in pre_result){
+            result.add(DataChanges(
+                date = data.date,
+                name = data.name,
+                surname = data.surname,
+                nameOfWarehouse = data.nameOfWarehouse,
+                photoPath = data.photoPath,
+                valueChanges = data.valueChanges,
+                typeOfChanges = data.typeOfChanges,
+                typeOfProduct = data.typeOfProduct,
+
+            ))
+        }
+
+        return result
+    }
+
+    override suspend fun getUserName(): String {
+        val result = userStorage.getUserName()
+        return result
+    }
+
+    override suspend fun getUserSurname(): String {
+        val result = userStorage.getUserSurname()
+        return result
+    }
+
+    override suspend fun sendAllDataChanges(dataChanges: DataChanges): Boolean {
+        val data = Data(
+            date = dataChanges.date,
+            name = dataChanges.name,
+            surname = dataChanges.surname,
+            nameOfWarehouse = dataChanges.nameOfWarehouse,
+            photoPath = dataChanges.photoPath,
+            valueChanges = dataChanges.valueChanges,
+            typeOfChanges = dataChanges.typeOfChanges,
+            typeOfProduct = dataChanges.typeOfProduct)
+        val result = userStorage.sendAllDataChanges(data)
+
+        return result
+    }
 
 }
